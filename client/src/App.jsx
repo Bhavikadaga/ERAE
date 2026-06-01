@@ -1,0 +1,23 @@
+import { Routes, Route } from 'react-router-dom'
+import CustomerLayout from './components/layout/CustomerLayout'
+import Home from './pages/customer/Home'
+import ProductList from './pages/customer/ProductList'
+
+function App() {
+  return (
+    <Routes>
+      <Route element={<CustomerLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/products" element={<div>Products Page</div>} />
+        <Route path="/cart" element={<div>Cart Page</div>} />
+        <Route path="/login" element={<div>Login Page</div>} />
+      </Route>
+      <Route path="/admin" element={<div>Admin Dashboard</div>} />
+      <Route path="/products/all" element={<ProductList />} />
+      <Route path="/products/shirts" element={<ProductList />} />
+      <Route path="/products/new-arrivals" element={<ProductList />} />
+    </Routes>
+  )
+}
+
+export default App
