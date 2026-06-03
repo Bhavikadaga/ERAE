@@ -34,9 +34,9 @@ const userSchema = new mongoose.Schema({
             label: String,
             street: String,
             city: String,
-            state: State,
+            state: String,
             pincode: String,
-            isDefault: {type: Boolean, default: false}
+            isDefault: { type: Boolean, default: false }
         }
     ],
     isActive: {
@@ -46,10 +46,9 @@ const userSchema = new mongoose.Schema({
 }, {timestamps: true})
 
 // Hash pass before saving
-userSchema.pre('save', async function(next){
-    if(!this.isModified('password')) return next()
-    this.password = await bcrypt.has(this.password, 12)
-    next()
+userSchema.pre('save', async function(){
+    if(!this.isModified('password')) return 
+    this.password = await bcrypt.hash(this.password, 12)
 })
 
 // compare password 
@@ -57,4 +56,4 @@ userSchema.methods.comparePassword = async function(enteredPassword){
     return await bcrypt.compare(enteredPassword, this.password)
 }
 
-module.export = mongoose.model('User', userSchema)
+module.exports = mongoose.model('User', userSchema)
