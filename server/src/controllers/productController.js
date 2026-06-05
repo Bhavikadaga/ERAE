@@ -18,7 +18,7 @@ exports.getAllProducts = async (req, res) =>{
 
         if(minPrice || maxPrice){
             filter.price = {}
-            if(minPrice) query.page.$gte = Number(minPrice)
+            if(minPrice) filter.price.$gte = Number(minPrice)
             if(maxPrice) query.price.$lte  = Number(maxPrice)
         }
 
@@ -70,7 +70,7 @@ exports.getProduct = async (req, res) =>{
 // GET api/products/featured
 exports.getFeaturedProducts = async (req, res) =>{
     try{
-        const products = await Products.find({ isActive: true, isFeatured: true })
+        const products = await Product.find({ isActive: true, isFeatured: true })
             .populate('category', 'name slug')
             .limit(8)
 

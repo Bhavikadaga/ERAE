@@ -11,9 +11,8 @@ const productSchema = new mongoose.Schema({
         required: [true, 'Description is required']
     },
     price:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
-        required: [true, 'Category is required']
+        type: Number,
+        required: true
     },
     images: [
         {
@@ -27,6 +26,11 @@ const productSchema = new mongoose.Schema({
             stock: {type: Number, default: 0}
         }
     ],
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true
+    },
     fabric: {
         type: String,
         enum: ['New In', 'Best Seller', 'Sale', 'Most Wanted', 'Fast Mover', null],

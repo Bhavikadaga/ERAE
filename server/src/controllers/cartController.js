@@ -8,11 +8,11 @@ exports.getCart = async(req, res) =>{
         .populate({ path: 'items.product', strictPopulate: false })
 
         if(!cart){
-            crat = { items: [], total: 0}
+            cart = { items: [], total: 0}
         }
         res.status(200).json({ success: true, cart})
     }catch(err){
-        res.status(500).json({ success: fasle, message: err.message })
+        res.status(500).json({ success: false, message: err.message })
     }
 }
 
@@ -23,13 +23,13 @@ exports.addToCart = async (req, res) =>{
         
         const product = await Product.findById(productId)
         if(!product || !product.isActive){
-            return res.status(404).json({ successs: false, message: 'product not found'})
+            return res.status(400).json({ success: false, message: 'product not found'})
         }
 
         // size stock
         const sizeObj = product.size.find(s=> s.label === size)
         if(!sizeObj || sizeObj.stock < quantity){
-            return res.sttatus(404).json({ success: false, message: 'Selected size is out of stock'})
+            return res.sttatus(400).json({ success: false, message: 'Selected size is out of stock'})
         }
 
         const price = product.salePrice || product.price
@@ -38,7 +38,7 @@ exports.addToCart = async (req, res) =>{
 
         if(!cart){
             cart = await Cart.create({
-                use: req.user._id,
+                user: req.user._id,
                 items: [{ product: productId, size, quantity, price}]
             })
         }else{
@@ -47,9 +47,9 @@ exports.addToCart = async (req, res) =>{
             )
 
             if(existingItem){
-                existingItem.quantity += quanitiy
+                existingItem.quantity += quantity
             }else{
-                cart.items.push({ product: productId, size, quanitiy, price})
+                cart.items.push({ product: productId, size, quantity, price})
             }
             await cart.save()
         }
@@ -64,14 +64,14 @@ exports.addToCart = async (req, res) =>{
 // PUT api/cart/:itemId - update quantity
 exports.updateCartItems = async (req, res) =>{
     try{
-        const { quanitiy } = req.body 
+        const { quantity } = req.body 
 
         const cart = await Cart.findOne({ user: req.user._id })
         if(!cart){
             return res.status(404).json({ success: false, message: 'Cart not found' })
         }
 
-        const items = cart.items.id(req.params.itemId)
+        const item = cart.items.id(req.params.itemId)
         if(!item){
             return res.status(404).json({ success: false, message: 'Item not found in cart' })
         }
@@ -79,13 +79,13 @@ exports.updateCartItems = async (req, res) =>{
         if(quantity <= 0){
             cart.items.pull(req.params.itemId)
         }else{
-            item.quantity = quanitiy
+            item.quantity = quantity
         }
 
         await cart.save()
         await cart.populate({ path: 'items.product', strictPopulate: false})
 
-        res.status(200).json({ success: false, cart })
+        res.status(200).json({ success: true, cart })
     }catch(err){
         res.status(500).json({ success: false, message: err.message })
     }
@@ -94,7 +94,7 @@ exports.updateCartItems = async (req, res) =>{
 // DELETE api/cart/:itemId - remove item
 exports.removeFromCart = async (req, res) =>{
     try{
-        const cart = await Cart.findOneAndDelete({ user: req.user._id })
+        const cart = await Cart.findOne({ user: req.user._id })
         if(!cart){
             return res.status(404).json({ success: false, message: 'Cart not found'})
         }
@@ -114,7 +114,7 @@ exports.clearCart = async (req, res) =>{
     try{
         const cart = await Cart.findOne({ user: req.user._id })
         if(cart){
-            crat.item = []
+            cart.items = []
             await cart.save()
         }
         res.status(200).json({ success: true, message: 'Cart cleared' })
