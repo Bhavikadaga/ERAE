@@ -23,7 +23,7 @@ const productSchema = new mongoose.Schema({
     ],
     size: [
         {
-            label: {type: String, enum[ 'XS', 'S', 'M', 'L', 'XL', 'XXL']},
+            label: {type: String, enum: [ 'XS', 'S', 'M', 'L', 'XL', 'XXL']},
             stock: {type: Number, default: 0}
         }
     ],
