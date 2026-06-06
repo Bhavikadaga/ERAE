@@ -12,7 +12,11 @@ const productSchema = new mongoose.Schema({
     },
     price:{
         type: Number,
-        required: true
+        required: [true, 'Price is required']
+    },
+    salePrice: {
+        type: Number,
+        default: null
     },
     images: [
         {
@@ -20,7 +24,7 @@ const productSchema = new mongoose.Schema({
             public_id: { type: String, required: true}
         }
     ],
-    size: [
+    sizes: [
         {
             label: {type: String, enum: [ 'XS', 'S', 'M', 'L', 'XL', 'XXL']},
             stock: {type: Number, default: 0}
@@ -33,8 +37,11 @@ const productSchema = new mongoose.Schema({
     },
     fabric: {
         type: String,
-        enum: ['New In', 'Best Seller', 'Sale', 'Most Wanted', 'Fast Mover', null],
-        default: null
+        trim: true
+    },
+    badge: {
+        type: String,
+        isActive: ['New In', 'Best Seller', 'Sale', 'Most Wanted', null]
     },
     tags: [String],
     isActive: {

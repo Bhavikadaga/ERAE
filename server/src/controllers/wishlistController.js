@@ -6,7 +6,7 @@ const { StrictMode } = require('react')
 exports.getWishlist = async(req, res) =>{
     try{
         let wishlist = await Wishlist.findOne({user: req.user._id})
-        .populate({ path: 'products', StricPopulate: false })
+        .populate({ path: 'products', StrictPopulate: false })
         if(!wishlist){
             wishlist = await Wishlist.create({
                 user: req.user._id,
@@ -32,7 +32,7 @@ exports.addToWishlist = async (req, res) =>{
 
         if(!wishlist){
             wishlist = await Wishlist.create({
-                user: req.params._id,
+                user: req.user._id,
                 products: []
             })
         }
@@ -40,7 +40,7 @@ exports.addToWishlist = async (req, res) =>{
         const exists = wishlist.products.includes(req.params.productId)
 
         if(!exists){
-            wishlist.products.push(req.params.productid)
+            wishlist.products.push(req.params.productId)
             await wishlist.save()
         }
         res.status(200).json({ success: true, wishlist})

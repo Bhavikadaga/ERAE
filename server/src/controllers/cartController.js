@@ -27,9 +27,9 @@ exports.addToCart = async (req, res) =>{
         }
 
         // size stock
-        const sizeObj = product.size.find(s=> s.label === size)
+        const sizeObj = product.sizes.find(s=> s.label === size)
         if(!sizeObj || sizeObj.stock < quantity){
-            return res.sttatus(400).json({ success: false, message: 'Selected size is out of stock'})
+            return res.status(400).json({ success: false, message: 'Selected size is out of stock'})
         }
 
         const price = product.salePrice || product.price

@@ -6,7 +6,6 @@ const {
     removeFromWishlist
 } = require('../controllers/wishlistController')
 const { protect } = require('../middleware/auth')
-const { get } = require('mongoose')
 
 router.use(protect)
 

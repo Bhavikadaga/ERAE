@@ -19,7 +19,7 @@ exports.getAllProducts = async (req, res) =>{
         if(minPrice || maxPrice){
             filter.price = {}
             if(minPrice) filter.price.$gte = Number(minPrice)
-            if(maxPrice) query.price.$lte  = Number(maxPrice)
+            if (maxPrice) filter.price.$lte = Number(maxPrice)
         }
 
         // Sorting
@@ -31,7 +31,7 @@ exports.getAllProducts = async (req, res) =>{
         const skip = (Number(page) - 1) * Number(limit)
 
         const products = await Product.find(filter)
-           .populate('category', 'name slug')
+           .populate({path: 'category', strictPopulate: false})
            .sort(sortOption)
            .skip(skip)
            .limit(Number(limit))
@@ -56,7 +56,7 @@ exports.getAllProducts = async (req, res) =>{
 // GET api/products/:id
 exports.getProduct = async (req, res) =>{
     try{
-        const product = await Product.findById(req.params.id).populate('category', 'name slug')
+        const product = await Product.findById(req.params.id).populate({path: 'category', strictPopulate: false})
 
         if(!product || !product.isActive){
             return res.status(404).json({ success: false, message: 'Product not found' })
@@ -71,7 +71,7 @@ exports.getProduct = async (req, res) =>{
 exports.getFeaturedProducts = async (req, res) =>{
     try{
         const products = await Product.find({ isActive: true, isFeatured: true })
-            .populate('category', 'name slug')
+            .populate({path: 'category', strictPopulate: false})
             .limit(8)
 
         res.status(200).json({ success: true, products })
