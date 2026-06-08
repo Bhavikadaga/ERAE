@@ -1,7 +1,25 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import mockProducts from '../../data/mockProducts'
+import { getFeaturedProducts } from '../../services/productService'
 
 function Home() {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const res = await getFeaturedProducts()
+        setProducts(res.data.products || [])
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchFeatured()
+  }, [])
+
   return (
     <div>
       {/* Hero Banner */}
@@ -21,38 +39,46 @@ function Home() {
           <h2 className="text-2xl font-light tracking-[0.2em] uppercase text-stone-800">Featured</h2>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {mockProducts.map(product => (
-            <Link to={`/products/${product._id}`} key={product._id} className="group">
-              <div className="relative overflow-hidden bg-stone-100 aspect-[3/4]">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                {product.badge && (
-                  <span className="absolute top-3 left-3 text-xs tracking-widest uppercase px-2 py-1"
-                    style={{ backgroundColor: '#A8B89C', color: 'white' }}>
-                    {product.badge}
-                  </span>
-                )}
-              </div>
-              <div className="mt-3">
-                <p className="text-xs tracking-widest uppercase text-stone-700">{product.name}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  {product.salePrice ? (
-                    <>
-                      <span className="text-sm text-stone-800">₹{product.salePrice}</span>
-                      <span className="text-xs text-stone-400 line-through">₹{product.price}</span>
-                    </>
-                  ) : (
-                    <span className="text-sm text-stone-800">₹{product.price}</span>
+        {loading && (
+          <div className="text-center py-10 text-xs tracking-widest uppercase text-stone-400">
+            Loading...
+          </div>
+        )}
+
+        {!loading && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {products.map(product => (
+              <Link to={`/products/${product._id}`} key={product._id} className="group">
+                <div className="relative overflow-hidden bg-stone-100 aspect-[3/4]">
+                  <img
+                    src={product.images[0]?.url}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {product.badge && (
+                    <span className="absolute top-3 left-3 text-xs tracking-widest uppercase px-2 py-1"
+                      style={{ backgroundColor: '#A8B89C', color: 'white' }}>
+                      {product.badge}
+                    </span>
                   )}
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+                <div className="mt-3">
+                  <p className="text-xs tracking-widest uppercase text-stone-700">{product.name}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {product.salePrice ? (
+                      <>
+                        <span className="text-sm text-stone-800">₹{product.salePrice}</span>
+                        <span className="text-xs text-stone-400 line-through">₹{product.price}</span>
+                      </>
+                    ) : (
+                      <span className="text-sm text-stone-800">₹{product.price}</span>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
         <div className="text-center mt-10">
           <Link to="/products/all" className="border border-stone-800 text-stone-800 text-xs tracking-widest uppercase px-8 py-3 hover:bg-stone-800 hover:text-white transition-all duration-300">
