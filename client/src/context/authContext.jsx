@@ -3,7 +3,7 @@ import { getMe, logout as logoutService } from "../services/authService";
 
 const AuthContext = createContext()
 
-export function AuthProvider({ childern }){
+export function AuthProvider({ children }){
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
 
@@ -32,7 +32,7 @@ export function AuthProvider({ childern }){
 
     return(
         <AuthContext.Provider value={{ user, setUser, loading, logout }}>
-            {!loading && childern}
+            {!loading && children}
         </AuthContext.Provider>
     )
 }

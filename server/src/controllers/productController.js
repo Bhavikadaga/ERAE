@@ -24,9 +24,9 @@ exports.getAllProducts = async (req, res) =>{
 
         // Sorting
         let sortOption = { createdAt: -1 }
-        if(sort === 'price-low') sortOption = {price: 1}
-        if(sort === 'price-high') sortOption = { price: -1}
-        if(sort === 'newest') sortOption = { createdAt: -1}
+        if (sort === 'price-low') sortOption = { salePrice: 1, price: 1 }
+        if (sort === 'price-high') sortOption = { salePrice: -1, price: -1 }
+        if (sort === 'newest') sortOption = { createdAt: -1 }
 
         const skip = (Number(page) - 1) * Number(limit)
 

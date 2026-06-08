@@ -1,52 +1,71 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from 'react'
 import api from '../services/api'
-import { useAuth } from "./authContext";
+import { useAuth } from './authContext'
 
-const cartContext = createContext()
+const CartContext = createContext()
 
-export function CartProvider({ children }){
-    const { user } = userAuth()
-    const [cart, setCart] = useState(null)
+export function CartProvider({ children }) {
+  const { user } = useAuth()
+  const [cart, setCart] = useState(null)
 
-    useEffect(() =>{
-        if(user) fetchCart()
-        else setCart(null)
-    }, [user])
+  useEffect(() => {
+    if (user) fetchCart()
+    else setCart(null)
+  }, [user])
 
-    const fetchCart = async () =>{
-        try{
-            const res = await api.get('/cart')
-            setCart(res.data.cart)
-        }catch(err){
-            console.log(err)
-        }
+  const fetchCart = async () => {
+    try {
+      const res = await api.get('/cart')
+      setCart(res.data.cart)
+    } catch (err) {
+      console.log(err)
     }
+  }
 
-    const addToCart = async (productId, Sanitizer, quantity) =>{
-        try{
-            const res = await api.delete(`/cart/${itemId}`)
-            setCart(res.data.cart)
-        }catch(err){
-            console.log(err)
-        }
+  const addToCart = async (productId, size, quantity) => {
+    try {
+      const res = await api.post('/cart', { productId, size, quantity })
+      setCart(res.data.cart)
+      return { success: true }
+    } catch (err) {
+      return { success: false, message: err.response?.data?.message }
     }
+  }
 
-    const clearCar = async () =>{
-        try{
-            await api.delete('/cart/clear')
-            setCart(null)
-        }catch(err){
-            console.log(err)
-        }
+  const removeFromCart = async (itemId) => {
+    try {
+      const res = await api.delete(`/cart/${itemId}`)
+      setCart(res.data.cart)
+    } catch (err) {
+      console.log(err)
     }
+  }
 
-    const cartCount = cart?.items?.length || 0
+  const updateQuantity = async (itemId, quantity) => {
+    try {
+      const res = await api.put(`/cart/${itemId}`, { quantity })
+      setCart(res.data.cart)
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
-    return(
-        <cartContext.Provider value = {{ carct, cartCount, fetchCart, addToCart, removeFromCart, updateQuantity, clearCart}}>
-            {children}
-        </cartContext.Provider>
-    )
+  const clearCart = async () => {
+    try {
+      await api.delete('/cart/clear')
+      setCart(null)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const cartCount = cart?.items?.length || 0
+
+  return (
+    <CartContext.Provider value={{ cart, cartCount, fetchCart, addToCart, removeFromCart, updateQuantity, clearCart }}>
+      {children}
+    </CartContext.Provider>
+  )
 }
 
 export const useCart = () => useContext(CartContext)
