@@ -3,6 +3,8 @@ import CustomerLayout from './components/layout/CustomerLayout'
 import Home from './pages/customer/Home'
 import ProductList from './pages/customer/ProductList'
 import ProductDetail from './pages/customer/ProductDetail'
+import Login from './pages/auth/Login'
+import Register from './pages/auth/Register'
 
 function App() {
   return (
@@ -15,9 +17,10 @@ function App() {
         <Route path="/products/new-arrivals" element={<ProductList />} />
         <Route path="/products/:id" element={<ProductDetail/>} />
         <Route path="/cart" element={<div>Cart Page</div>} />
-        <Route path="/login" element={<div>Login Page</div>} />
       </Route>
       <Route path="/admin" element={<div>Admin Dashboard</div>} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
     </Routes>
   )
 }
