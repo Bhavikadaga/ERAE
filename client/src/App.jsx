@@ -5,6 +5,9 @@ import ProductList from './pages/customer/ProductList'
 import ProductDetail from './pages/customer/ProductDetail'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
+import Cart from './pages/customer/Cart'
+import Checkout from './pages/customer/Checkout'
+import OrderDetail from './pages/customer/orderDetail'
 
 function App() {
   return (
@@ -16,7 +19,9 @@ function App() {
         <Route path="/products/shirts" element={<ProductList />} />
         <Route path="/products/new-arrivals" element={<ProductList />} />
         <Route path="/products/:id" element={<ProductDetail/>} />
-        <Route path="/cart" element={<div>Cart Page</div>} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders/:id" element={<OrderDetail />} />
       </Route>
       <Route path="/admin" element={<div>Admin Dashboard</div>} />
       <Route path="/login" element={<Login />} />
