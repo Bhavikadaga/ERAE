@@ -1,8 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { getAllProducts } from '../../services/productService'
 
 function ProductList() {
+  const location = useLocation()
+  const isSale = location.pathname === '/products/sale'
+
   const [products, setProducts] = useState([])
   const [sort, setSort] = useState('newest')
   const [loading, setLoading] = useState(true)
@@ -12,7 +15,11 @@ function ProductList() {
       try {
         setLoading(true)
         const res = await getAllProducts()
-        setProducts(res.data.products || [])
+        let data = res.data.products || []
+        if (isSale) {
+          data = data.filter(p => p.salePrice !== null && p.salePrice !== undefined && p.salePrice > 0)
+        }
+        setProducts(data)
       } catch (err) {
         console.log(err.response?.data || err.message)
       } finally {
@@ -20,26 +27,26 @@ function ProductList() {
       }
     }
     fetchProducts()
-  }, [])
+  }, [isSale])
 
   const sortedProducts = useMemo(() => {
-   const effectivePrice = (p) => (p.salePrice !== null && p.salePrice !== undefined && p.salePrice > 0) ? p.salePrice : p.price
-   if (sort === 'price-low') return [...products].sort((a, b) => effectivePrice(a) - effectivePrice(b))
-   if (sort === 'price-high') return [...products].sort((a, b) => effectivePrice(b) - effectivePrice(a))
-   return products 
+    const effectivePrice = (p) => (p.salePrice !== null && p.salePrice !== undefined && p.salePrice > 0) ? p.salePrice : p.price
+    if (sort === 'price-low') return [...products].sort((a, b) => effectivePrice(a) - effectivePrice(b))
+    if (sort === 'price-high') return [...products].sort((a, b) => effectivePrice(b) - effectivePrice(a))
+    return products
   }, [products, sort])
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
 
-      {/* Page Header */}
       <div className="text-center mb-10">
         <p className="text-xs tracking-[0.3em] uppercase text-stone-400 mb-2">EREA</p>
-        <h1 className="text-2xl font-light tracking-[0.2em] uppercase text-stone-800">All Shirts</h1>
+        <h1 className="text-2xl font-light tracking-[0.2em] uppercase text-stone-800">
+          {isSale ? 'Sale' : 'All Shirts'}
+        </h1>
         <p className="text-xs text-stone-400 mt-2">{sortedProducts.length} products</p>
       </div>
 
-      {/* Sort Bar */}
       <div className="flex justify-end mb-6">
         <select
           value={sort}
@@ -52,14 +59,12 @@ function ProductList() {
         </select>
       </div>
 
-      {/* Loading */}
       {loading && (
         <div className="text-center py-20 text-xs tracking-widest uppercase text-stone-400">
           Loading...
         </div>
       )}
 
-      {/* Product Grid */}
       {!loading && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {sortedProducts.map(product => (
@@ -95,10 +100,9 @@ function ProductList() {
         </div>
       )}
 
-      {/* Empty */}
       {!loading && sortedProducts.length === 0 && (
         <div className="text-center py-20 text-xs tracking-widest uppercase text-stone-400">
-          No products found
+          {isSale ? 'No items on sale right now' : 'No products found'}
         </div>
       )}
     </div>
