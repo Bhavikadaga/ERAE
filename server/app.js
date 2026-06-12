@@ -10,6 +10,7 @@ const categoryRoutes = require('./src/routes/categoryRoutes')
 const cartRoutes = require('./src/routes/cartRoutes')
 const wishlistRoutes = require('./src/routes/wishlistRoutes')
 const orderRoutes = require('./src/routes/orderRoutes')
+const reviewRoutes = require('./src/routes/reviewRoutes')
 const app = express()
 
 app.use(helmet())
@@ -23,6 +24,7 @@ app.use('/api/categories', categoryRoutes)
 app.use('/api/cart', cartRoutes)
 app.use('/api/wishlist', wishlistRoutes)
 app.use('/api/orders', orderRoutes)
+app.use('/api/reviews', reviewRoutes)
 
 
 app.get('/', (req, res) =>{

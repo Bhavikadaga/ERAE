@@ -2,143 +2,190 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getProduct } from '../../services/productService'
 import { useCart } from '../../context/cartContext'
+import { useAuth } from '../../context/authContext'
 import toast from 'react-hot-toast'
+import api from '../../services/api'
 
 function ProductDetail() {
-    const { id } = useParams()
-    const [product, setProduct] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [selectedSize, setSelectedSize] = useState(null)
-    const [quantity, setQuantity] = useState(1)
-    const [selectedImage, setSelectedImage] = useState(0)
-    const { addToCart } = useCart()
+  const { id } = useParams()
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [selectedSize, setSelectedSize] = useState(null)
+  const [quantity, setQuantity] = useState(1)
+  const [selectedImage, setSelectedImage] = useState(0)
+  const [reviews, setReviews] = useState([])
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' })
+  const [submittingReview, setSubmittingReview] = useState(false)
+  const { addToCart } = useCart()
+  const { user } = useAuth()
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const res = await getProduct(id)
-                setProduct(res.data.product)
-            }catch (err) {
-                console.log(err)
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchProduct()
-    }, [id])
-
-    const handleAddToCart = async () => {
-        if (!selectedSize) {
-            toast.error('Please select a size')
-            return
-        }
-        const result = await addToCart(product._id, selectedSize, quantity)
-        if (result.success) {
-            toast.success('Added to cart')
-        } else {
-            toast.error(result.message || 'Something went wrong')
-        }
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await getProduct(id)
+        setProduct(res.data.product)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setLoading(false)
+      }
     }
+    fetchProduct()
+  }, [id])
 
-    if (loading) return (
-        <div className="text-center py-20 text-xs tracking-widest uppercase text-stone-400">
-          Loading...
-        </div>
-    )
+  // Fetch reviews
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await api.get(`/reviews/${id}`)
+        setReviews(res.data.reviews)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    fetchReviews()
+  }, [id])
 
-    if (!product) return (
-        <div className="text-center py-20 text-xs tracking-widest uppercase text-stone-400">
-          Product not found
-        </div>
-    )
+  const handleAddToCart = async () => {
+    if (!selectedSize) {
+      toast.error('Please select a size')
+      return
+    }
+    const result = await addToCart(product._id, selectedSize, quantity)
+    if (result.success) {
+      toast.success('Added to cart')
+    } else {
+      toast.error(result.message || 'Something went wrong')
+    }
+  }
 
-    return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+  const handleAddToWishlist = async () => {
+    try {
+      await api.post(`/wishlist/${product._id}`)
+      toast.success('Added to wishlist')
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Please login first')
+    }
+  }
 
-            {/* Images */}
-            <div>
-                <div className="aspect-[3/4] overflow-hidden bg-stone-100">
-                    <img
-                    src={product.images[selectedImage]?.url}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                    />
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault()
+    if (!user) {
+      toast.error('Please login to write a review')
+      return
+    }
+    try {
+      setSubmittingReview(true)
+      const res = await api.post(`/reviews/${id}`, reviewForm)
+      setReviews([res.data.review, ...reviews])
+      setReviewForm({ rating: 5, comment: '' })
+      toast.success('Review submitted')
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Something went wrong')
+    } finally {
+      setSubmittingReview(false)
+    }
+  }
+
+  if (loading) return (
+    <div className="text-center py-20 text-xs tracking-widest uppercase text-stone-400">
+      Loading...
+    </div>
+  )
+
+  if (!product) return (
+    <div className="text-center py-20 text-xs tracking-widest uppercase text-stone-400">
+      Product not found
+    </div>
+  )
+
+  return (
+    <div className="max-w-7xl mx-auto px-6 py-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+        {/* Images */}
+        <div>
+          <div className="aspect-[3/4] overflow-hidden bg-stone-100">
+            <img
+              src={product.images[selectedImage]?.url}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          {product.images.length > 1 && (
+            <div className="flex gap-2 mt-3">
+              {product.images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelectedImage(i)}
+                  className={`w-16 h-20 overflow-hidden border-2 ${selectedImage === i ? 'border-stone-800' : 'border-transparent'}`}
+                >
+                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
             </div>
-            {product.images.length > 1 && (
-                <div className="flex gap-2 mt-3">
-                    {product.images.map((img, i) => (
-                      <button
-                      key={i}
-                      onClick={() => setSelectedImage(i)}
-                      className={`w-16 h-20 overflow-hidden border-2 ${selectedImage === i ? 'border-stone-800' : 'border-transparent'}`}
-                      >
-                      <img src={img.url} alt="" className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                </div>
-            )}
+          )}
         </div>
 
         {/* Details */}
         <div className="flex flex-col gap-6">
-            {product.badge && (
-              <span className="text-xs tracking-widest uppercase px-2 py-1 self-start"
-                style={{ backgroundColor: '#A8B89C', color: 'white' }}>
-                {product.badge}
-              </span>
+          {product.badge && (
+            <span className="text-xs tracking-widest uppercase px-2 py-1 self-start"
+              style={{ backgroundColor: '#A8B89C', color: 'white' }}>
+              {product.badge}
+            </span>
+          )}
+
+          <div>
+            <h1 className="text-2xl font-light tracking-[0.15em] uppercase text-stone-800">{product.name}</h1>
+            {product.category && (
+              <p className="text-xs tracking-widest uppercase text-stone-400 mt-1">{product.category.name}</p>
             )}
+          </div>
 
-            <div>
-                <h1 className="text-2xl font-light tracking-[0.15em] uppercase text-stone-800">{product.name}</h1>
-                {product.category && (
-                <p className="text-xs tracking-widest uppercase text-stone-400 mt-1">{product.category.name}</p>
-                )}
-            </div>
-
-            {/* Price */}
-            <div className="flex items-center gap-3">
-              {product.salePrice ? (
-                <>
-                  <span className="text-xl text-stone-800">₹{product.salePrice}</span>
-                  <span className="text-sm text-stone-400 line-through">₹{product.price}</span>
-                  <span className="text-xs text-green-600">
+          {/* Price */}
+          <div className="flex items-center gap-3">
+            {product.salePrice ? (
+              <>
+                <span className="text-xl text-stone-800">₹{product.salePrice}</span>
+                <span className="text-sm text-stone-400 line-through">₹{product.price}</span>
+                <span className="text-xs text-green-600">
                   {Math.round((product.price - product.salePrice) / product.price * 100)}% off
-                  </span>
-                </>
-              ) : (
-                <span className="text-xl text-stone-800">₹{product.price}</span>
-              )}
-            </div>
+                </span>
+              </>
+            ) : (
+              <span className="text-xl text-stone-800">₹{product.price}</span>
+            )}
+          </div>
 
-            {/* Description */}
-            <p className="text-sm text-stone-500 leading-relaxed">{product.description}</p>
+          {/* Description */}
+          <p className="text-sm text-stone-500 leading-relaxed">{product.description}</p>
 
-            {/* Fabric */}
-            {product.fabric && (
+          {/* Fabric */}
+          {product.fabric && (
             <p className="text-xs tracking-widest uppercase text-stone-400">
               Fabric: <span className="text-stone-600">{product.fabric}</span>
             </p>
-            )}
+          )}
 
-            {/* Sizes */}
-            <div>
-              <p className="text-xs tracking-widest uppercase text-stone-500 mb-3">Select Size</p>
-              <div className="flex gap-2 flex-wrap">
-                {product.sizes.map(size => (
-                  <button
+          {/* Sizes */}
+          <div>
+            <p className="text-xs tracking-widest uppercase text-stone-500 mb-3">Select Size</p>
+            <div className="flex gap-2 flex-wrap">
+              {product.sizes.map(size => (
+                <button
                   key={size.label}
                   onClick={() => size.stock > 0 && setSelectedSize(size.label)}
                   className={`w-12 h-12 border text-xs tracking-widest uppercase transition-all
                     ${selectedSize === size.label ? 'border-stone-800 bg-stone-800 text-white' : 'border-stone-300 text-stone-600'}
                     ${size.stock === 0 ? 'opacity-30 cursor-not-allowed line-through' : 'hover:border-stone-800 cursor-pointer'}
                   `}
-                  >
+                >
                   {size.label}
-                  </button>
-                ))}
-              </div>
+                </button>
+              ))}
             </div>
+          </div>
 
           {/* Quantity */}
           <div>
@@ -165,9 +212,77 @@ function ProductDetail() {
           </button>
 
           {/* Wishlist */}
-          <button className="w-full py-4 border border-stone-300 text-stone-600 text-xs tracking-widest uppercase hover:border-stone-800 transition-colors">
+          <button
+            onClick={handleAddToWishlist}
+            className="w-full py-4 border border-stone-300 text-stone-600 text-xs tracking-widest uppercase hover:border-stone-800 transition-colors"
+          >
             Add to Wishlist
           </button>
+        </div>
+      </div>
+
+      {/* Reviews */}
+      <div className="mt-16 max-w-3xl">
+        <h2 className="text-xs tracking-widest uppercase text-stone-700 font-medium mb-2">
+          Reviews ({product.ratings?.count || 0})
+        </h2>
+        {product.ratings?.count > 0 && (
+          <p className="text-sm text-stone-500 mb-6">
+            Average rating: {product.ratings.average} / 5
+          </p>
+        )}
+
+        {/* Write a review */}
+        {user && (
+          <form onSubmit={handleReviewSubmit} className="border border-stone-200 p-5 mb-8 flex flex-col gap-4">
+            <div>
+              <label className="text-xs tracking-widest uppercase text-stone-500 block mb-2">Rating</label>
+              <select
+                value={reviewForm.rating}
+                onChange={e => setReviewForm({ ...reviewForm, rating: Number(e.target.value) })}
+                className="border border-stone-200 px-4 py-2 text-sm text-stone-800 outline-none"
+              >
+                {[5, 4, 3, 2, 1].map(n => (
+                  <option key={n} value={n}>{n} Star{n > 1 ? 's' : ''}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs tracking-widest uppercase text-stone-500 block mb-2">Your Review</label>
+              <textarea
+                value={reviewForm.comment}
+                onChange={e => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                required
+                rows={3}
+                className="w-full border border-stone-200 px-4 py-3 text-sm text-stone-800 outline-none focus:border-stone-400"
+                placeholder="Share your experience with this product..."
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={submittingReview}
+              className="self-start px-6 py-3 bg-stone-800 text-white text-xs tracking-widest uppercase hover:bg-stone-700 transition-colors disabled:opacity-50"
+            >
+              {submittingReview ? 'Submitting...' : 'Submit Review'}
+            </button>
+          </form>
+        )}
+
+        {/* Review list */}
+        <div className="flex flex-col gap-5">
+          {reviews.length === 0 && (
+            <p className="text-xs tracking-widest uppercase text-stone-400">No reviews yet</p>
+          )}
+          {reviews.map(review => (
+            <div key={review._id} className="border-b border-stone-100 pb-4">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs tracking-widest uppercase text-stone-700 font-medium">{review.user?.name}</p>
+                <p className="text-xs text-stone-400">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</p>
+              </div>
+              <p className="text-sm text-stone-600">{review.comment}</p>
+              <p className="text-xs text-stone-400 mt-1">{new Date(review.createdAt).toLocaleDateString()}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>
