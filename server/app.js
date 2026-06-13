@@ -11,6 +11,7 @@ const cartRoutes = require('./src/routes/cartRoutes')
 const wishlistRoutes = require('./src/routes/wishlistRoutes')
 const orderRoutes = require('./src/routes/orderRoutes')
 const reviewRoutes = require('./src/routes/reviewRoutes')
+const uploadRoutes = require('./src/routes/uploadRoutes')
 const app = express()
 
 app.use(helmet())
@@ -25,7 +26,7 @@ app.use('/api/cart', cartRoutes)
 app.use('/api/wishlist', wishlistRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/reviews', reviewRoutes)
-
+app.use('/api/upload', uploadRoutes)
 
 app.get('/', (req, res) =>{
     res.json({ message: 'Server is running' })

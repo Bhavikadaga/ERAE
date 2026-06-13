@@ -13,6 +13,7 @@ import Account from './pages/customer/Account'
 import Search from './pages/customer/Search'
 import AdminLayout from './components/layout/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
+import Products from './pages/admin/Products'
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
       </Route>
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
+        <Route path="products" element={<Products />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
