@@ -14,6 +14,8 @@ import Search from './pages/customer/Search'
 import AdminLayout from './components/layout/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
 import Products from './pages/admin/Products'
+import Categories from './pages/admin/Categories'
+import Orders from './pages/admin/Orders'
 
 function App() {
   return (
@@ -37,6 +39,8 @@ function App() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="products" element={<Products />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="orders" element={<Orders />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
