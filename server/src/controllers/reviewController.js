@@ -1,6 +1,19 @@
 const Review = require('../models/Review')
 const Product = require('../models/Product')
 
+// GET api/reviews/admin/all
+exports.getAllReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find()
+      .populate('user', 'name')
+      .populate('product', 'name')
+      .sort({ createdAt: -1 })
+    res.status(200).json({ success: true, reviews })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+}
+
 // GET api/reviews/:productId
 exports.getProductReviews = async (req, res) => {
     try{
