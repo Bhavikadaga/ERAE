@@ -34,8 +34,8 @@ export function CartProvider({ children }) {
 
   const removeFromCart = async (itemId) => {
     try {
-      const res = await api.delete(`/cart/${itemId}`)
-      setCart(res.data.cart)
+      await api.delete(`/cart/${itemId}`)
+      fetchCart()
     } catch (err) {
       console.log(err)
     }
@@ -43,8 +43,8 @@ export function CartProvider({ children }) {
 
   const updateQuantity = async (itemId, quantity) => {
     try {
-      const res = await api.put(`/cart/${itemId}`, { quantity })
-      setCart(res.data.cart)
+      await api.put(`/cart/${itemId}`, {quantity})
+      fetchCart()
     } catch (err) {
       console.log(err)
     }

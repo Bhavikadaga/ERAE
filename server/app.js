@@ -14,6 +14,7 @@ const reviewRoutes = require('./src/routes/reviewRoutes')
 const uploadRoutes = require('./src/routes/uploadRoutes')
 const userRoutes = require('./src/routes/userRoutes')
 const couponRoutes = require('./src/routes/couponRoutes')
+const settingsRoutes = require('./src/routes/settingsRoutes')
 const app = express()
 
 app.use(helmet())
@@ -31,6 +32,7 @@ app.use('/api/reviews', reviewRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/coupons', couponRoutes)
+app.use('/api/settings', settingsRoutes)
 
 app.get('/', (req, res) =>{
     res.json({ message: 'Server is running' })

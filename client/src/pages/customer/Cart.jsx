@@ -83,7 +83,7 @@ function Cart() {
               {/* Remove */}
               <div className="flex flex-col items-end justify-between">
                 <button
-                  onClick={() => removeFromCart(item._id)}
+                  onClick={() => removeFromCart( item._id || item.id )}
                   className="text-xs text-stone-400 hover:text-stone-700 tracking-widest uppercase"
                 >
                   Remove

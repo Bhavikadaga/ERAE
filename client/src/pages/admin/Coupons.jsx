@@ -64,7 +64,7 @@ function Coupons() {
     const handleDelete = async (id) =>{
         if(!window.confirm('Delete this coupon?')) return
         try{
-            await api.delete(`/coupon/${id}`)
+            await api.delete(`/coupons/${id}`)
             toast.success('Coupon deleted')
             fetchCoupons()
         }catch(err){
@@ -74,7 +74,7 @@ function Coupons() {
 
     const handleToggle  = async (id, isActive) =>{
         try{
-            await api.put(`/coupons/${id}`, {isActive})
+            await api.put(`/coupons/${id}`, {isActive: !isActive})
             toast.success(isActive ? 'Coupon deactivated' : 'Coupon activated')
             fetchCoupons()
         }catch(err){

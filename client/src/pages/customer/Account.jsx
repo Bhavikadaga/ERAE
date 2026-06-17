@@ -67,8 +67,15 @@ function Account() {
             <p className="text-xs tracking-widest uppercase text-stone-400 mb-1">Email</p>
             <p className="text-sm text-stone-800 mb-4">{user.email}</p>
 
-            <p className="text-xs tracking-widest uppercase text-stone-400 mb-1">Role</p>
-            <p className="text-sm text-stone-800 mb-6 capitalize">{user.role}</p>
+            {(user.role === 'admin' || user.role === 'superadmin') && (
+            <>
+              <p className="text-xs tracking-widest uppercase text-stone-400 mb-1">Role</p>
+              <p className="text-sm text-stone-800 mb-3 capitalize">{user.role}</p>
+              <Link to="/admin" className="block text-center py-2 bg-stone-800 text-white text-xs tracking-widest uppercase hover:bg-stone-700 transition-colors mb-4">
+                Go to Admin Panel
+              </Link>
+            </>
+            )}
 
             <button
               onClick={handleLogout}

@@ -7,6 +7,8 @@ import toast from 'react-hot-toast'
 
 function Checkout() {
   const { cart, clearCart } = useCart()
+  const [couponCode, setCouponCode] = useState('')
+  const [discount, setDiscount] = useState(0)
   const { user } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -23,10 +25,20 @@ function Checkout() {
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
+  const handleApplyCoupon = async () => {
+  if (!couponCode) return
+  try {
+    const res = await api.post('/coupons/apply', { code: couponCode, orderAmount: subtotal })
+    setDiscount(res.data.discount)
+    toast.success(`Coupon applied! ₹${res.data.discount} off`)
+  }catch(err){
+    toast.error(err.response?.data?.message || 'Invalid coupon')
+  }
+}
 
   const subtotal = cart?.items?.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0
   const shippingCharge = subtotal >= 999 ? 0 : 99
-  const total = subtotal + shippingCharge
+  const total = subtotal + shippingCharge - discount
 
   const handlePlaceOrder = async () => {
     if (!form.street || !form.city || !form.state || !form.pincode || !form.phone) {
@@ -36,9 +48,10 @@ function Checkout() {
     try {
       setLoading(true)
       const res = await api.post('/orders', {
-        shippingAddress: form,
-        paymentMethod
-      })
+      shippingAddress: form,
+      paymentMethod,
+      couponCode
+    })
       toast.success('Order placed successfully!')
       navigate(`/orders/${res.data.order._id}`)
     } catch (err) {
@@ -111,6 +124,30 @@ function Checkout() {
               </div>
             </div>
           </div>
+
+          {/* Coupon */}   
+          <div>
+            <h2 className="text-xs tracking-widest uppercase text-stone-700 font-medium mb-5">Coupon Code</h2>
+            <div className="flex gap-2">
+            <input
+            type="text"
+            value={couponCode}
+            onChange={e => setCouponCode(e.target.value.toUpperCase())}
+            placeholder="Enter coupon code"
+            className="flex-1 border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-400"
+            />
+            <button
+            type="button"
+            onClick={handleApplyCoupon}
+            className="px-5 py-3 bg-stone-800 text-white text-xs tracking-widest uppercase hover:bg-stone-700"
+            >
+              Apply
+            </button>
+          </div>
+          {discount > 0 && (
+            <p className="text-xs text-green-600 mt-2">Coupon applied! You save ₹{discount}</p>
+          )}
+        </div>
 
           {/* Payment Method */}
           <div>

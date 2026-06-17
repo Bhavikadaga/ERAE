@@ -30,8 +30,8 @@ function Wishlist() {
   const handleRemove = async (productId) => {
     try {
       const res = await api.delete(`/wishlist/${productId}`)
-      setWishlist(res.data.wishlist)
       toast.success('Removed from wishlist')
+      fetchWishlist()
     } catch (err) {
       toast.error('Something went wrong')
     }
@@ -73,7 +73,7 @@ function Wishlist() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-        {wishlist.products.map(product => (
+        {wishlist.products.filter(Boolean).map(product => (
           <div key={product._id} className="group relative">
             <Link to={`/products/${product._id}`}>
               <div className="relative overflow-hidden bg-stone-100 aspect-[3/4]">
@@ -105,7 +105,7 @@ function Wishlist() {
             </Link>
 
             <button
-              onClick={() => handleRemove(product._id)}
+              onClick={() => handleRemove(product._id || product)}
               className="absolute top-3 right-3 w-7 h-7 bg-white rounded-full flex items-center justify-center text-stone-500 hover:text-red-500 shadow-sm"
             >
               ✕

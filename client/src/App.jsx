@@ -18,6 +18,8 @@ import Categories from './pages/admin/Categories'
 import Orders from './pages/admin/Orders'
 import Customers from './pages/admin/Customers'
 import Coupons from './pages/admin/Coupons'
+import Reviews from './pages/admin/Reviews'
+import Settings from './pages/admin/Settings'
 
 function App() {
   return (
@@ -45,6 +47,8 @@ function App() {
         <Route path="orders" element={<Orders />} />
         <Route path="customers" element={<Customers />} />
         <Route path="coupons" element={<Coupons />} />
+        <Route path="reviews" element={<Reviews />} />   
+        <Route path="settings" element={<Settings />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

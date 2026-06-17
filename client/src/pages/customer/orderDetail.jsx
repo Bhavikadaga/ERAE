@@ -102,7 +102,23 @@ function OrderDetail() {
           Continue Shopping
         </Link>
       </div>
+
+      {order.orderStatus === 'delivered' && (
+      <div className="border border-stone-200 p-6 mt-6">
+        <h2 className="text-xs tracking-widest uppercase text-stone-700 font-medium mb-4">Leave a Review</h2>
+        <p className="text-xs text-stone-400 mb-4">You can review the products from your order on their product pages.</p>
+        {order.items.map((item, i) => (
+        <Link
+        key={i}
+        to={`/products/${item.product}`}
+        className="block text-xs tracking-widest uppercase text-stone-600 hover:text-stone-900 underline mb-2"
+        >
+        Review: {item.name}
+        </Link>
+      ))}
     </div>
+  )}
+  </div>
   )
 }
 

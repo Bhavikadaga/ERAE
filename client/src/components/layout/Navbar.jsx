@@ -2,18 +2,20 @@ import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../../context/authContext'
 import { useCart } from '../../context/cartContext'
+import { useSettings } from "../../context/settingContext";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { user, logout } = useAuth()
   const { cartCount } = useCart()
+  const { settings } = useSettings()
 
   return (
     <>
       {/* Announcement Bar / Marquee */}
-      <div style={{ backgroundColor: '#A8B89C' }} className="text-white text-xs py-2 tracking-widest uppercase overflow-hidden whitespace-nowrap">
+      <div style={{ backgroundColor: settings.accentColor }} className="text-white text-xs py-2 tracking-widest uppercase overflow-hidden whitespace-nowrap">
         <span className="inline-block animate-marquee">
-          Free Shipping Above ₹999 &nbsp;&nbsp;|&nbsp;&nbsp; COD Available &nbsp;&nbsp;|&nbsp;&nbsp; 7 Day Easy Returns &nbsp;&nbsp;|&nbsp;&nbsp; Free Shipping Above ₹999 &nbsp;&nbsp;|&nbsp;&nbsp; COD Available &nbsp;&nbsp;|&nbsp;&nbsp; 7 Day Easy Returns
+         {settings.announcementText} &nbsp;&nbsp;|&nbsp;&nbsp; {settings.announcementText}
         </span>
       </div>
 
