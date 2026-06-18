@@ -9,10 +9,12 @@ const {
   updateOrderStatus
 } = require('../controllers/orderController')
 const { protect, restrictTo } = require('../middleware/auth')
+const validate = require('../middleware/validate')
+const { orderValidator } = require('../middleware/validators')
 
 router.use(protect)
 
-router.post('/', createOrder)
+router.post('/', orderValidator, validate, createOrder)
 router.get('/my', getMyOrders)
 router.get('/admin/all', restrictTo('admin', 'superadmin'), getAllOrders)
 router.get('/:id', getOrder)

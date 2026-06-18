@@ -38,4 +38,12 @@ app.get('/', (req, res) =>{
     res.json({ message: 'Server is running' })
 })
 
+app.use((err, req, res) =>{
+    console.error(err.stack)
+    res.status(err.statusCode || 500).json({
+        success: false, 
+        message: err.message || 'Iternal server error'
+    })
+})
+
 module.exports = app
