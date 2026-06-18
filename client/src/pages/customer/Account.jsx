@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 import { useAuth } from '../../context/authContext'
+import toast from 'react-hot-toast'
 
 function Account() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showPasswordForm, setShowPasswordForm] = useState(false)
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '' })
+  const [changingPassword, setChangingPassword] = useState(false)
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -26,6 +30,35 @@ function Account() {
   const handleLogout = async () => {
     await logout()
     navigate('/')
+  }
+
+  const handleCancleOrder = async (orderId) =>{
+    if(!window.confirm('Are you sure you want to cancel this order?')) return
+    try{
+      await api.put(`/orders/${orderId}/cancel`)
+      toast.success('Order cancelled')
+      setOrders(res.data.orders)
+    }catch(err){
+      toast.error(err.response?.data?.message || 'Cannot cancel this order')
+    }
+  }
+
+  const handlePasswordChange = async (e) =>{
+    e.preventDefault()
+    if(passwordForm.newPassword.length < 6){
+      toast.error('New password must be at least 6 characters')
+      return
+    }
+    try{
+      setChangingPassword(true)
+      await api.put('/auth/change-password', passwordForm)
+      toast.success('Paaword changed successfully')
+      setShowPasswordForm({ currentPassword: '', newPassword: '' })
+    }catch(err){
+      toast.error(err.response?.data?.message || 'Something went wrong')
+    }finally{
+      setChangingPassword(false)
+    }
   }
 
   const statusColors = {
@@ -78,12 +111,54 @@ function Account() {
             )}
 
             <button
+            onClick={() => setShowPasswordForm(!showPasswordForm)}
+            className='w-full py-2 border border-stone-300 text-stone-600 text-xs tracking-widest uppercase hover:border-stone-800 transition-colors mb-3'
+            >
+              Change Password
+            </button>
+
+            <button
               onClick={handleLogout}
               className="w-full py-3 border border-stone-300 text-stone-600 text-xs tracking-widest uppercase hover:border-stone-800 hover:text-stone-800 transition-colors"
             >
               Logout
             </button>
           </div>
+
+          {showPasswordForm && (
+            <div className='border border-stone-200 p-6'>
+              <h2 className='text-xs tracking-widest uppercase text-stone-700 font-medium mb-4'>Change Password</h2>
+              <form onSubmit={handlePasswordChange} className='flex flex-col gap-3'>
+                <div>
+                  <label className='text-xs tracking-widest uppercase text-stone-500 block mb-2'>Current Password</label>
+                  <input 
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                  required
+                  className='w-full border border-stone-200 px-3 py-2 text-sm outline-none focus:border-stone-400'
+                  />
+                </div>
+                <div>
+                  <label className='text-xs tracking-widest uppercase text-stone-500 block mb-2'>New Password</label>
+                  <input 
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={e => setPasswordForm({ newPassword: e.target.value })} 
+                  required
+                  className='w-full border border-stone-200 px-3 py-2 text-sm outline-none focus:border-stone-400'
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={changingPassword}
+                  className="w-full py-2 bg-stone-800 text-white text-xs tracking-widest uppercase hover:bg-stone-700 disabled:opacity-50"
+                >
+                  {changingPassword ? 'Changing...' : 'Update Password'}
+                </button>
+              </form>
+            </div>
+          )}
         </div>
 
         <div className="md:col-span-2">
