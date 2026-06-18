@@ -48,10 +48,11 @@ function Checkout() {
     try {
       setLoading(true)
       const res = await api.post('/orders', {
-      shippingAddress: form,
-      paymentMethod,
-      couponCode
-    })
+        shippingAddress: form,
+        paymentMethod,
+        couponCode,
+        discount
+      })
       toast.success('Order placed successfully!')
       navigate(`/orders/${res.data.order._id}`)
     } catch (err) {

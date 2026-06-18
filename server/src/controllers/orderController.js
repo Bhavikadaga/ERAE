@@ -4,7 +4,7 @@ const Cart = require('../models/Cart')
 // POST api/orders
 exports.createOrder = async (req, res) => {
   try {
-    const { shippingAddress, paymentMethod, couponCode } = req.body
+    const { shippingAddress, paymentMethod, couponCode, discount = 0 } = req.body
 
     const cart = await Cart.findOne({ user: req.user._id })
       .populate({ path: 'items.product', strictPopulate: false })
@@ -24,7 +24,6 @@ exports.createOrder = async (req, res) => {
 
     const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
     const shippingCharge = subtotal >= 999 ? 0 : 99
-    const discount = 0
     const total = subtotal + shippingCharge - discount
 
     const order = await Order.create({
@@ -39,6 +38,13 @@ exports.createOrder = async (req, res) => {
         couponCode,
         statusHistory: [{ status: 'pending', note: 'Order placed' }]
     })
+
+    if (couponCode) {
+      await require('../models/Coupon').findOneAndUpdate(
+      { code: couponCode.toUpperCase() },
+      { $inc: { usedCount: 1 } }
+    )
+  }
 
     cart.items = []
     await cart.save()
