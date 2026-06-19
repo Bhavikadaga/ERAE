@@ -10,7 +10,7 @@ function Account() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [showPasswordForm, setShowPasswordForm] = useState(false)
-  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '' })
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
   const [changingPassword, setChangingPassword] = useState(false)
 
   useEffect(() => {
@@ -50,12 +50,19 @@ function Account() {
       toast.error('New password must be at least 6 characters')
       return
     }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('Passwords do not match')
+      return
+    }
     try {
       setChangingPassword(true)
-      await api.put('/auth/change-password', passwordForm)
+      await api.put('/auth/change-password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      })
       toast.success('Password changed successfully')
       setShowPasswordForm(false)
-      setPasswordForm({ currentPassword: '', newPassword: '' })
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
     } catch (err) {
       toast.error(err.response?.data?.message || 'Something went wrong')
     } finally {
@@ -99,6 +106,7 @@ function Account() {
 
             <p className="text-xs tracking-widest uppercase text-stone-400 mb-1">Email</p>
             <p className="text-sm text-stone-800 mb-4">{user.email}</p>
+
             {(user.role === 'admin' || user.role === 'superadmin') && (
               <>
                 <p className="text-xs tracking-widest uppercase text-stone-400 mb-1">Role</p>
@@ -109,7 +117,7 @@ function Account() {
                 </Link>
               </>
             )}
-            
+
             <button
               onClick={() => setShowPasswordForm(!showPasswordForm)}
               className="w-full py-2 border border-stone-300 text-stone-600 text-xs tracking-widest uppercase hover:border-stone-800 transition-colors mb-3"
@@ -145,6 +153,16 @@ function Account() {
                     type="password"
                     value={passwordForm.newPassword}
                     onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                    required
+                    className="w-full border border-stone-200 px-3 py-2 text-sm outline-none focus:border-stone-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs tracking-widest uppercase text-stone-500 block mb-2">Confirm New Password</label>
+                  <input
+                    type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                     required
                     className="w-full border border-stone-200 px-3 py-2 text-sm outline-none focus:border-stone-400"
                   />
