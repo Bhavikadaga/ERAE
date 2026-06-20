@@ -1,6 +1,5 @@
 const Wishlist = require('../models/Wishlist')
 const Product = require('../models/Product')
-const { StrictMode } = require('react')
 
 // GET /api/wishlist
 exports.getWishlist = async(req, res) =>{
