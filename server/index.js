@@ -16,6 +16,8 @@ const userRoutes = require('./src/routes/userRoutes')
 const couponRoutes = require('./src/routes/couponRoutes')
 const settingsRoutes = require('./src/routes/settingsRoutes')
 const app = express()
+const connectDB = require('./src/config/db')
+connectDB();
 
 app.use(helmet())
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
