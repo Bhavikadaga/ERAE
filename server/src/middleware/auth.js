@@ -3,6 +3,9 @@ const User = require('../models/User')
 
 exports.protect = async (req, res, next) => {
   try {
+    console.log('cookies:', req.cookies)
+    console.log('token:', req.cookies.token)
+
     let token
 
     if (req.cookies.token) {
@@ -12,18 +15,21 @@ exports.protect = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Not authorized, please login'
+        message: 'No token found'
       })
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    console.log('decoded:', decoded)
+
     req.user = await User.findById(decoded.id)
     next()
-
   } catch (err) {
+    console.log('AUTH ERROR:', err.message)
+
     return res.status(401).json({
       success: false,
-      message: 'Not authorized, please login'
+      message: 'Not authorized'
     })
   }
 }

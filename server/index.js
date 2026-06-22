@@ -20,7 +20,12 @@ const connectDB = require('./src/config/db')
 connectDB();
 
 app.use(helmet())
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }))
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
 app.use(express.json())
 app.use(cookieParser())
 app.use(morgan('dev'))

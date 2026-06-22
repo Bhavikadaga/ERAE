@@ -10,15 +10,12 @@ const connectDB = async () => {
     }
 
     try {
-        // MONGODB_URI must exactly match your Vercel Environment Variable name
         const db = await mongoose.connect(process.env.MONGODB_URI);
         
         isConnected = db.connections[0].readyState;
         console.log('✅ MongoDB connected successfully');
     } catch (err) {
         console.log('❌ MongoDB connection error:', err);
-        // Do NOT use process.exit(1) in Vercel. 
-        // Just throw the error so the specific API request fails cleanly.
         throw err; 
     }
 }
