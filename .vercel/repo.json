@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_Leh08y6imNyCnEg9ya0by2ZAFMtS",
+      "name": "erae-backend",
+      "directory": "server",
+      "orgId": "team_WE6QvGWlXpaF4KdNz2W0NFh2"
+    }
+  ]
+}

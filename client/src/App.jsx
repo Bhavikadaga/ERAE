@@ -28,17 +28,17 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<ProductList />} />
         <Route path="/products/all" element={<ProductList />} />
-        <Route path="/products/shirts" element={<ProductList />} />
         <Route path="/products/new-arrivals" element={<ProductList />} />
-        <Route path="/products/sale" element={<ProductList/>} />
-        <Route path="/products/:id" element={<ProductDetail/>} />
+        <Route path="/products/sale" element={<ProductList />} />
+        <Route path="/products/category/:slug" element={<ProductList />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders/:id" element={<OrderDetail />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/account" element={<Account />} />
-        <Route path="/search" element={<Search />} />
         <Route path="/account/orders" element={<Account />} />
+        <Route path="/search" element={<Search />} />
       </Route>
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
@@ -47,7 +47,7 @@ function App() {
         <Route path="orders" element={<Orders />} />
         <Route path="customers" element={<Customers />} />
         <Route path="coupons" element={<Coupons />} />
-        <Route path="reviews" element={<Reviews />} />   
+        <Route path="reviews" element={<Reviews />} />
         <Route path="settings" element={<Settings />} />
       </Route>
       <Route path="/login" element={<Login />} />
