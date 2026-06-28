@@ -11,7 +11,7 @@ function Dashboard() {
             try{
                 const [ordersRes, productsRes] = await Promise.all([
                     api.get('/orders/admin/all?limit=5'),
-                    api.get('/products/limit=1')
+                    api.get('/products?limit=1')
                 ])
 
                 const orders = ordersRes.data.orders
@@ -30,7 +30,7 @@ function Dashboard() {
                 setLoading(false)
             }
         }
-        fetchData
+        fetchData()
     }, [])
 
     const statusColors = {

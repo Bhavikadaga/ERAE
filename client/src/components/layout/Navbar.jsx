@@ -33,11 +33,17 @@ function Navbar() {
         style={{ backgroundColor: settings.accentColor }}
         className="text-white text-xs py-2 tracking-widest uppercase overflow-hidden whitespace-nowrap"
       >
-        <span className="inline-block animate-marquee">
-          {settings.announcementText}
-          &nbsp;&nbsp;|&nbsp;&nbsp;
-          {settings.announcementText}
-        </span>
+        {/* Announcement Bar / Marquee */}
+        <div style={{ backgroundColor: settings.accentColor }} className="text-white text-xs py-2 tracking-widest uppercase overflow-hidden whitespace-nowrap">
+          <div className="animate-marquee">
+            <span className="flex-shrink-0 px-4">
+            {settings.announcementText} &nbsp;&nbsp;|&nbsp;&nbsp; {settings.announcementText} &nbsp;&nbsp;|&nbsp;&nbsp; {settings.announcementText} &nbsp;&nbsp;|&nbsp;&nbsp; {settings.announcementText}
+            </span>
+            <span className="flex-shrink-0 px-4" aria-hidden="true">
+            {settings.announcementText} &nbsp;&nbsp;|&nbsp;&nbsp; {settings.announcementText} &nbsp;&nbsp;|&nbsp;&nbsp; {settings.announcementText} &nbsp;&nbsp;|&nbsp;&nbsp; {settings.announcementText}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Main Navbar */}
