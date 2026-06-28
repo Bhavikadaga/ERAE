@@ -60,8 +60,8 @@ const orderSchema = new mongoose.Schema({
   cancelledAt: Date
 }, { timestamps: true })
 
-orderSchema.index({ user: 1 })
-orderSchema.index({ orderStatus: 1 })
+orderSchema.index({ user: 1, createdAt: -1 })
+orderSchema.index({ orderStatus: 1, createdAt: -1 })
 orderSchema.index({ createdAt: -1 })
 
 module.exports = mongoose.model('Order', orderSchema)

@@ -40,12 +40,13 @@ function Orders() {
   const handleStatusUpdate = async (orderId, orderStatus) => {
     try {
       setUpdatingStatus(true)
-      await api.put(`/orders/admin/${orderId}/status`, { orderStatus })
+      const res = await api.put(`/orders/admin/${orderId}/status`, { orderStatus })
+      const updated = res.data.order
       toast.success('Order status updated')
-      fetchOrders()
-      setSelectedOrder(prev => prev ? { ...prev, orderStatus } : null)
+      setOrders(prev => prev.map(o => o._id === updated._id ? { ...o, ...updated } : o))
+      setSelectedOrder(prev => prev && prev._id === updated._id ? { ...prev, ...updated } : prev)
     } catch (err) {
-      toast.error('Something went wrong')
+      toast.error(err.response?.data?.message || 'Something went wrong')
     } finally {
       setUpdatingStatus(false)
     }

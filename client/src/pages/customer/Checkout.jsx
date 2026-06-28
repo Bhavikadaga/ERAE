@@ -6,7 +6,7 @@ import api from '../../services/api'
 import toast from 'react-hot-toast'
 
 function Checkout() {
-  const { cart, clearCart } = useCart()
+  const { cart, resetCart } = useCart()
   const [couponCode, setCouponCode] = useState('')
   const [discount, setDiscount] = useState(0)
   const { user } = useAuth()
@@ -53,6 +53,7 @@ function Checkout() {
         couponCode,
         discount
       })
+      resetCart()
       toast.success('Order placed successfully!')
       navigate(`/orders/${res.data.order._id}`)
     } catch (err) {

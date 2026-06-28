@@ -1,129 +1,104 @@
 const Product = require('../models/Product')
+const asyncHandler = require('../utils/asyncHandler')
 
 // GET  api/products
-exports.getAllProducts = async (req, res) =>{
-    try{
-        const { category, sort, minPrice, maxPrice, search, page = 1, limit = 12 } = req.query
-        
-        let filter= { isActive: true }
+exports.getAllProducts = asyncHandler(async (req, res) => {
+  const { category, sort, minPrice, maxPrice, search, page = 1, limit = 12 } = req.query
 
-        // Search
-        if(search){
-            filter.$text = { $search: search }
-        }
+  let filter = { isActive: true }
 
-        if(category){
-            filter.category = category
-        }
+  if (search) {
+    filter.$text = { $search: search }
+  }
 
-        if(minPrice || maxPrice){
-            filter.price = {}
-            if(minPrice) filter.price.$gte = Number(minPrice)
-            if (maxPrice) filter.price.$lte = Number(maxPrice)
-        }
+  if (category) {
+    filter.category = category
+  }
 
-        // Sorting
-        let sortOption = { createdAt: -1 }
-        if (sort === 'price-low') sortOption = { salePrice: 1, price: 1 }
-        if (sort === 'price-high') sortOption = { salePrice: -1, price: -1 }
-        if (sort === 'newest') sortOption = { createdAt: -1 }
+  if (minPrice || maxPrice) {
+    filter.price = {}
+    if (minPrice) filter.price.$gte = Number(minPrice)
+    if (maxPrice) filter.price.$lte = Number(maxPrice)
+  }
 
-        const skip = (Number(page) - 1) * Number(limit)
+  let sortOption = { createdAt: -1 }
+  if (sort === 'price-low') sortOption = { salePrice: 1, price: 1 }
+  if (sort === 'price-high') sortOption = { salePrice: -1, price: -1 }
+  if (sort === 'newest') sortOption = { createdAt: -1 }
 
-        const products = await Product.find(filter)
-           .populate({path: 'category', strictPopulate: false})
-           .sort(sortOption)
-           .skip(skip)
-           .limit(Number(limit))
+  const skip = (Number(page) - 1) * Number(limit)
 
-        const total = await Product.countDocuments(filter)
+  const products = await Product.find(filter)
+    .populate({ path: 'category', strictPopulate: false })
+    .sort(sortOption)
+    .skip(skip)
+    .limit(Number(limit))
 
-        res.status(200).json({
-            success: true,
-            products,
-            pagination: {
-                total,
-                page: Number(page),
-                pages: Math.ceil(total / Number(limit)),
-                limit: Number(limit)
-            }
-        })
-    }catch(err){
-        res.status(500).json({ success: false, message: err.message })
+  const total = await Product.countDocuments(filter)
+
+  res.status(200).json({
+    success: true,
+    products,
+    pagination: {
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / Number(limit)),
+      limit: Number(limit)
     }
-}
+  })
+})
 
 // GET api/products/:id
-exports.getProduct = async (req, res) =>{
-    try{
-        const product = await Product.findById(req.params.id).populate({path: 'category', strictPopulate: false})
+exports.getProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findById(req.params.id).populate({ path: 'category', strictPopulate: false })
 
-        if(!product || !product.isActive){
-            return res.status(404).json({ success: false, message: 'Product not found' })
-        }
-        res.status(200).json({ success: true, product })
-    }catch(err){
-        res.status(500).json({ success: false, message: err.message })
-    }
-}
+  if (!product || !product.isActive) {
+    return res.status(404).json({ success: false, message: 'Product not found' })
+  }
+  res.status(200).json({ success: true, product })
+})
 
 // GET api/products/featured
-exports.getFeaturedProducts = async (req, res) =>{
-    try{
-        const products = await Product.find({ isActive: true, isFeatured: true })
-            .populate({path: 'category', strictPopulate: false})
-            .limit(8)
+exports.getFeaturedProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find({ isActive: true, isFeatured: true })
+    .populate({ path: 'category', strictPopulate: false })
+    .limit(8)
 
-        res.status(200).json({ success: true, products })
-    }catch(err){
-        res.status(500).json({ success: false, message: err.message })
-    }
-}
+  res.status(200).json({ success: true, products })
+})
 
 // POST api/products - Admin only
-exports.createProduct = async (req, res) =>{
-    try{
-        const product = await Product.create(req.body)
-        res.status(201).json({ success: true, product })
-    }catch(err){
-        res.status(500).json({ success: false, message: err.message })
-    }
-}
+exports.createProduct = asyncHandler(async (req, res) => {
+  const product = await Product.create(req.body)
+  res.status(201).json({ success: true, product })
+})
 
 // PUT api/products/:id - Admin only
-exports.updateProduct = async(req, res) =>{
-    try{
-        const product = await Product.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true, runValidators: true }
-        )
-        
-        if(!product){
-            return res.status(404).json({ success: false, message: 'Product not found'})
-        }
+exports.updateProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true, runValidators: true }
+  )
 
-        res.status(200).json({ success: true, product})
-    }catch(err){
-        res.status(500).json({ success: false, message: err.message })
-    }
-}
+  if (!product) {
+    return res.status(404).json({ success: false, message: 'Product not found' })
+  }
 
-// DELETE api/product/:id - admin 
-exports.deleteProduct = async (req, res) =>{
-    try{
-        const product = await Product.findByIdAndUpdate(
-        req.params.id,
-        { isActive: false },
-        { new: true }
-    )
+  res.status(200).json({ success: true, product })
+})
 
-    if(!product){
-        return res.status(404).json({ success: false, message: 'Product not found'})
-    }
+// DELETE api/product/:id - admin
+exports.deleteProduct = asyncHandler(async (req, res) => {
+  const product = await Product.findByIdAndUpdate(
+    req.params.id,
+    { isActive: false },
+    { new: true }
+  )
 
-    res.status(200).json({ success: true, message: 'Productt deleted successfully'})
-    }catch(err){
-        res.status(500).json({ success: false, message: err.message })
-    }
-}
+  if (!product) {
+    return res.status(404).json({ success: false, message: 'Product not found' })
+  }
+
+  res.status(200).json({ success: true, message: 'Product deleted successfully' })
+})

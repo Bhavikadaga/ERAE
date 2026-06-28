@@ -30,10 +30,10 @@ function Wishlist() {
   const handleRemove = async (productId) => {
     try {
       const res = await api.delete(`/wishlist/${productId}`)
+      setWishlist(res.data.wishlist)
       toast.success('Removed from wishlist')
-      fetchWishlist()
     } catch (err) {
-      toast.error('Something went wrong')
+      toast.error(err.response?.data?.message || 'Could not remove from wishlist')
     }
   }
 

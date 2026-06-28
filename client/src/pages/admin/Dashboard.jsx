@@ -9,21 +9,14 @@ function Dashboard() {
     useEffect(() =>{
         const fetchData= async () =>{
             try{
-                const [ordersRes, productsRes] = await Promise.all([
-                    api.get('/orders/admin/all?limit=5'),
-                    api.get('/products?limit=1')
-                ])
-
-                const orders = ordersRes.data.orders
-                const revenue = orders.reduce((acc, o) => acc+o.total, 0)
-
+                const res = await api.get('/orders/admin/stats')
                 setStats({
-                    orders: ordersRes.data.pagination.total,
-                    revenue,
-                    customers: 0,
-                    products: productsRes.data.pagination.total
+                    orders: res.data.stats.totalOrders,
+                    revenue: res.data.stats.revenue,
+                    customers: res.data.stats.totalCustomers,
+                    products: res.data.stats.totalProducts
                 })
-                setRecentOrders(orders)
+                setRecentOrders(res.data.recentOrders)
             }catch(err){
                 console.log(err)
             }finally{
@@ -61,10 +54,8 @@ function Dashboard() {
                     <p className="text-2xl text-stone-800 font-light">{stats.products}</p>
                 </div>
                 <div className="bg-white border border-stone-200 p-5 rounded">
-                    <p className="text-xs tracking-widest uppercase text-stone-400 mb-2"> Pending Orders</p>
-                    <p className="text-2xl text-stone-800 font-light">
-                        {recentOrders.filter(o => o.orderStatus === 'pending').length}
-                    </p>
+                    <p className="text-xs tracking-widest uppercase text-stone-400 mb-2">Total Customers</p>
+                    <p className="text-2xl text-stone-800 font-light">{stats.customers}</p>
                 </div>
             </div>
             <div className="bg-white border border-stone-200 rounded p-6">

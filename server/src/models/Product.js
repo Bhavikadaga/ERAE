@@ -41,7 +41,8 @@ const productSchema = new mongoose.Schema({
     },
     badge: {
         type: String,
-        isActive: ['New In', 'Best Seller', 'Sale', 'Most Wanted', null]
+        enum: ['New In', 'Best Seller', 'Sale', 'Most Wanted', null],
+        default: null
     },
     tags: [String],
     isActive: {

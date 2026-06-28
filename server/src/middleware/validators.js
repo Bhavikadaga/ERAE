@@ -1,7 +1,7 @@
 const { body } = require('express-validator')
 
 exports.registerValidator = [
-    body('name').trim().notEmpty().withMessage('Please provide a valid email'),
+    body('name').trim().notEmpty().withMessage('Name is required'),
     body('email').isEmail().withMessage('Please provide a valid email'),
     body('password').isLength({min: 6}).withMessage('Password must be at least 6 characters')
 ]
@@ -24,12 +24,12 @@ exports.orderValidator = [
     body('shippingAddress.city').trim().notEmpty().withMessage('City is required'),
     body('shippingAddress.state').trim().notEmpty().withMessage('State is required'),
     body('shippingAddress.pincode').trim().notEmpty().withMessage('Pincode is required'),
-    body('shippingAddress.phone').trim().notEmpty().withMessage('Phone is required'),,
+    body('shippingAddress.phone').trim().notEmpty().withMessage('Phone is required'),
     body('paymentMethod').isIn(['cod', 'stripe']).withMessage('Invalid payment method')
 ]
 
-exports.reviewValidaor = [
-    body('rating').isInt({ min: 1, max: 2 }).withMessage('Rating must be between 1 and 5'),
+exports.reviewValidator = [
+    body('rating').isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
     body('comment').trim().notEmpty().withMessage('Comment is required')
 ]
 
