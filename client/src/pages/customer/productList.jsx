@@ -15,7 +15,7 @@ function ProductList() {
   const [products, setProducts] = useState([])
   const [sort, setSort] = useState('newest')
   const [loading, setLoading] = useState(true)
-  const [pageTitle, setPageTitle] = useState('All Products')
+  const [pageTitle, setPageTitle] = useState('All Products')  
 
   useEffect(() => {
     const fetchProducts = async () => {
