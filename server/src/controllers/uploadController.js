@@ -10,7 +10,7 @@ exports.uploadImage = asyncHandler(async (req, res) => {
   const dataURI = `data:${req.file.mimetype};base64,${b64}`
 
   const result = await cloudinary.uploader.upload(dataURI, {
-    folder: 'erea-products',
+    folder: 'Eraè-products',
     resource_type: 'auto'
   })
 

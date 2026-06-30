@@ -112,7 +112,7 @@ function Navbar() {
             to="/"
             className="absolute left-1/2 -translate-x-1/2 text-xl md:text-2xl tracking-[0.2em] md:tracking-[0.3em] uppercase font-light text-stone-800"
           >
-            Erèa
+            Eraè
           </Link>
 
           {/* Right — Icons */}

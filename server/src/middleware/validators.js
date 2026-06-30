@@ -23,8 +23,8 @@ exports.orderValidator = [
     body('shippingAddress.street').trim().notEmpty().withMessage('Street is required'),
     body('shippingAddress.city').trim().notEmpty().withMessage('City is required'),
     body('shippingAddress.state').trim().notEmpty().withMessage('State is required'),
-    body('shippingAddress.pincode').trim().notEmpty().withMessage('Pincode is required'),
-    body('shippingAddress.phone').trim().notEmpty().withMessage('Phone is required'),
+    body('shippingAddress.pincode').trim().matches(/^\d{6}$/).withMessage('Pincode must be exactly 6 digits'),
+    body('shippingAddress.phone').trim().matches(/^\d{10}$/).withMessage('Phone number must be exactly 10 digits'),
     body('paymentMethod').isIn(['cod', 'stripe']).withMessage('Invalid payment method')
 ]
 

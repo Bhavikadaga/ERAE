@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../../context/cartContext'
 import { useAuth } from '../../context/authContext'
@@ -20,7 +20,21 @@ function Checkout() {
     pincode: '',
     phone: user?.phone || ''
   })
+  const [states, setStates] = useState([])
   const [paymentMethod, setPaymentMethod] = useState('cod')
+
+  useEffect(() =>{
+    const fetchStates = async() =>{
+      try{
+        const res = await fetch('https://indian-cities-states-api.vercel.app/api/states')
+        const data = await res.json()
+        setStates(data)
+      }catch(err){
+        console.log(err);
+      }
+    }
+    fetchStates()
+  }, [])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -43,6 +57,14 @@ function Checkout() {
   const handlePlaceOrder = async () => {
     if (!form.street || !form.city || !form.state || !form.pincode || !form.phone) {
       toast.error('Please fill all address fields')
+      return
+    }
+    if (!/^\d{6}$/.test(form.pincode)) {
+      toast.error('Pincode must be exactly 6 digits')
+      return
+    }  
+    if (!/^\d{10}$/.test(form.phone)) {
+      toast.error('Phone number must be exactly 10 digits')
       return
     }
     try {
@@ -71,7 +93,7 @@ function Checkout() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       <div className="text-center mb-10">
-        <p className="text-xs tracking-[0.3em] uppercase text-stone-400 mb-2">EREA</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-stone-400 mb-2">ERAÈ</p>
         <h1 className="text-2xl font-light tracking-[0.2em] uppercase text-stone-800">Checkout</h1>
       </div>
 
@@ -105,23 +127,37 @@ function Checkout() {
                 </div>
                 <div>
                   <label className="text-xs tracking-widest uppercase text-stone-500 block mb-2">State</label>
-                  <input name="state" value={form.state} onChange={handleChange}
-                    className="w-full border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-400 bg-white"
-                    placeholder="State" />
+                  <select name="state" value={form.state} onChange={handleChange}
+                    className="w-full border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-400 bg-white">
+                    <option value="">Select State</option>
+                    {states.map((s) =>(
+                      <option key={s.code} value={s.state}>{s.state}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs tracking-widest uppercase text-stone-500 block mb-2">Pincode</label>
-                  <input name="pincode" value={form.pincode} onChange={handleChange}
+                  <input name="pincode" value={form.pincode} onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 6)
+                    setForm({ ...form, pincode: value })
+                    }}
+                    inputMode="numeric"
                     className="w-full border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-400 bg-white"
-                    placeholder="Pincode" />
+                    placeholder="Pincode" 
+                  />
                 </div>
                 <div>
                   <label className="text-xs tracking-widest uppercase text-stone-500 block mb-2">Phone</label>
-                  <input name="phone" value={form.phone} onChange={handleChange}
+                  <input name="phone" value={form.phone} onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '').slice(0, 10)
+                    setForm({ ...form, phone: value })
+                    }}
+                    inputMode="numeric"
                     className="w-full border border-stone-200 px-4 py-3 text-sm outline-none focus:border-stone-400 bg-white"
-                    placeholder="Phone" />
+                    placeholder="Phone" 
+                  />
                 </div>
               </div>
             </div>

@@ -66,7 +66,7 @@ function ProductList() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
       <div className="text-center mb-10">
-        <p className="text-xs tracking-[0.3em] uppercase text-stone-400 mb-2">EREA</p>
+        <p className="text-xs tracking-[0.3em] uppercase text-stone-400 mb-2">ERAÈ</p>
         <h1 className="text-2xl font-light tracking-[0.2em] uppercase text-stone-800">{pageTitle}</h1>
         <p className="text-xs text-stone-400 mt-2">{sortedProducts.length} products</p>
       </div>

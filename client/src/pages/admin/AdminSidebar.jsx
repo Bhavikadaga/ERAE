@@ -17,7 +17,7 @@ function AdminSidebar() {
   return (
     <aside className="w-56 bg-white border-r border-stone-200 h-screen sticky top-0 flex flex-col py-8 px-4">
       <Link to="/" className="text-xl tracking-[0.3em] uppercase font-light text-stone-800 px-2 mb-10">
-        Erèa
+        Eraè
       </Link>
       <p className="text-xs tracking-widest uppercase text-stone-400 px-2 mb-4">Admin Panel</p>
 

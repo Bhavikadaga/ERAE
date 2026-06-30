@@ -20,7 +20,7 @@ function Register() {
             setLoading(true)
             const res = await register(form)
             setUser(res.data.user)
-            toast.success('Welcome to Erèa!')
+            toast.success('Welcome to Eraè!')
             navigate('/')
         } catch (err) {
             toast.error(err.response?.data?.message || 'Registration failed')
@@ -33,15 +33,15 @@ function Register() {
         <div className="min-h-screen flex" style={{ backgroundColor: '#F9F7F4' }}>
             <div className="hidden md:flex flex-1 flex-col items-center justify-center"
             style={{ backgroundColor: '#E8E0D5' }}>
-            <p className="text-3xl font-light tracking-[0.3em] uppercase text-stone-700">Erèa</p>
+            <p className="text-3xl font-light tracking-[0.3em] uppercase text-stone-700">Eraè</p>
             <p className="text-xs tracking-[0.2em] uppercase text-stone-500 mt-4 text-center px-12 leading-6">
-            Join the Erèa family.<br />Discover everyday wear, redefined.</p>
+            Join the Eraè family.<br />Discover everyday wear, redefined.</p>
             </div>
 
             <div className="flex-1 flex items-center justify-center px-8 py-12">
             <div className="w-full max-w-sm">
                 <div className="md:hidden text-center mb-10">
-                    <Link to="/" className="text-2xl tracking-[0.3em] uppercase font-light text-stone-800">Erèa</Link>
+                    <Link to="/" className="text-2xl tracking-[0.3em] uppercase font-light text-stone-800">Eraè</Link>
                 </div>
             <h2 className="text-xl font-light tracking-[0.2em] uppercase text-stone-800 mb-1">Create Account</h2>
             <p className="text-xs tracking-widest text-stone-400 uppercase mb-8">Join us today</p>
