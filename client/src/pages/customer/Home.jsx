@@ -23,7 +23,7 @@ function Home() {
   return (
     <div>
       {/* Hero Banner */}
-      <div style={{ backgroundColor: '#E8E0D5' }} className="w-full h-[80vh] flex items-center justify-center flex-col gap-6">
+      <div style={{ backgroundColor: '#E8E0D5' }} className="w-full h-[80vh] flex items-center justify-center flex-col gap-6 px-6 text-center">
         <p className="text-xs tracking-[0.3em] uppercase text-stone-500">New Collection</p>
         <h1 className="text-4xl md:text-6xl font-light tracking-[0.2em] uppercase text-stone-800">Everyday Wear</h1>
         <p className="text-sm tracking-[0.2em] uppercase text-stone-500">Redefined</p>
