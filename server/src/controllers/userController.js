@@ -32,3 +32,28 @@ exports.updateUser = asyncHandler(async (req, res) => {
   }
   res.status(200).json({ success: true, user })
 })
+
+// PUT /api/users/admin/:id/role
+exports.updateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body
+
+    if (!['customer', 'admin', 'superadmin'].includes(role)) {
+      return res.status(400).json({ success: false, message: 'Invalid role' })
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { role },
+      { new: true }
+    )
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' })
+    }
+
+    res.status(200).json({ success: true, user })
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message })
+  }
+}

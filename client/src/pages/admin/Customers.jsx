@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import api from '../../services/api'
 import toast from 'react-hot-toast'
+import { useAuth } from '../../context/authContext'
 
 function Customers() {
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedCustomer, setSelectedCustomer] = useState(null)
   const [search, setSearch] = useState('')
+  const { user: currentUser } = useAuth()
 
   useEffect(() => {
     fetchCustomers()
@@ -21,6 +23,17 @@ function Customers() {
       console.log(err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleRoleUpdate = async (id, role) => {
+    try {
+      await api.put(`/users/admin/${id}`, { role })
+      toast.success('Role updated')
+      fetchCustomers()
+      setSelectedCustomer(null)
+    } catch (err) {
+      toast.error('Something went wrong')
     }
   }
 
@@ -76,12 +89,18 @@ function Customers() {
                   <td className="p-4 text-stone-500 text-xs">{customer.email}</td>
                   <td className="p-4 text-stone-500 text-xs">{customer.phone || '-'}</td>
                   <td className="p-4">
-                    <span className={`text-xs tracking-widest uppercase px-2 py-1 rounded-full ${customer.role === 'superadmin' ? 'bg-purple-100 text-purple-700' : customer.role === 'admin' ? 'bg-blue-100 text-blue-700' : 'bg-stone-100 text-stone-600'}`}>
+                    <span className={`text-xs tracking-widest uppercase px-2 py-1 rounded-full ${
+                      customer.role === 'superadmin' ? 'bg-purple-100 text-purple-700' :
+                      customer.role === 'admin' ? 'bg-blue-100 text-blue-700' :
+                      'bg-stone-100 text-stone-600'
+                    }`}>
                       {customer.role}
                     </span>
                   </td>
                   <td className="p-4">
-                    <span className={`text-xs tracking-widest uppercase px-2 py-1 rounded-full ${customer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    <span className={`text-xs tracking-widest uppercase px-2 py-1 rounded-full ${
+                      customer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    }`}>
                       {customer.isActive ? 'Active' : 'Banned'}
                     </span>
                   </td>
@@ -114,7 +133,7 @@ function Customers() {
               <button onClick={() => setSelectedCustomer(null)} className="text-stone-400 hover:text-stone-700 text-xl">✕</button>
             </div>
 
-            <div className="flex flex-col gap-4 mb-8">
+            <div className="flex flex-col gap-4 mb-6">
               <div>
                 <p className="text-xs tracking-widest uppercase text-stone-400 mb-1">Name</p>
                 <p className="text-sm text-stone-700">{selectedCustomer.name}</p>
@@ -137,12 +156,38 @@ function Customers() {
               </div>
               <div>
                 <p className="text-xs tracking-widest uppercase text-stone-400 mb-1">Status</p>
-                <span className={`text-xs tracking-widest uppercase px-2 py-1 rounded-full ${selectedCustomer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                <span className={`text-xs tracking-widest uppercase px-2 py-1 rounded-full ${
+                  selectedCustomer.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
                   {selectedCustomer.isActive ? 'Active' : 'Banned'}
                 </span>
               </div>
             </div>
 
+            {/* Role Changer — only visible to superadmin, cannot change own role */}
+            {currentUser.role === 'superadmin' && selectedCustomer._id !== currentUser._id && (
+              <div className="mb-4">
+                <p className="text-xs tracking-widest uppercase text-stone-400 mb-2">Change Role</p>
+                <div className="flex gap-2">
+                  {['customer', 'admin', 'superadmin'].map(role => (
+                    <button
+                      key={role}
+                      onClick={() => handleRoleUpdate(selectedCustomer._id, role)}
+                      disabled={selectedCustomer.role === role}
+                      className={`flex-1 py-2 text-xs tracking-widest uppercase transition-colors border
+                        ${selectedCustomer.role === role
+                          ? 'border-stone-800 bg-stone-800 text-white cursor-default'
+                          : 'border-stone-300 text-stone-600 hover:border-stone-800 hover:text-stone-800'
+                        }`}
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Ban / Activate — only for customer role */}
             {selectedCustomer.role === 'customer' && (
               <button
                 onClick={() => handleToggleActive(selectedCustomer._id, selectedCustomer.isActive)}
